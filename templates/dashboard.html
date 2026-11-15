@@ -2,49 +2,65 @@
 {% block content %}
 <nav class="navbar">
     <h2>Zona 2</h2>
-    <div><span>Usuario: {{ usuario }}</span> <a href="{{ url_for('add_session') }}">Nueva Sesión</a> <a href="{{ url_for('logout') }}">Salir</a></div>
+    <div><span>{{ usuario }}</span> <a href="{{ url_for('add_session') }}">+ Nueva Sesión</a> <a href="{{ url_for('logout') }}">Salir</a></div>
 </nav>
 <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %} <div style="background:var(--success); color:#000; padding:10px; margin-bottom: 15px; border-radius:4px;">{{ messages[0] }}</div> {% endif %}
+    {% endwith %}
+    
     <div class="card">
-        <h3 style="margin-top: 0; color: var(--primary-color);">Evolución de Frecuencia Cardíaca</h3>
+        <form method="GET" action="{{ url_for('dashboard') }}" class="filters">
+            <div><label>Desde</label><input type="date" name="desde" value="{{ desde }}"></div>
+            <div><label>Hasta</label><input type="date" name="hasta" value="{{ hasta }}"></div>
+            <div><label>Actividad</label><select name="actividad">
+                <option value="Todas" {% if actividad=='Todas' %}selected{% endif %}>Todas</option>
+                <option value="Trote" {% if actividad=='Trote' %}selected{% endif %}>Trote</option>
+                <option value="Caminata" {% if actividad=='Caminata' %}selected{% endif %}>Caminata</option>
+            </select></div>
+            <div><button type="submit" class="btn" style="width:100%; height:42px;">Filtrar</button></div>
+        </form>
+        <div style="text-align: right; margin-top: 10px;">
+            <a href="{{ url_for('daily_summary', desde=desde, hasta=hasta, actividad=actividad) }}" style="color: var(--primary-color);">Ver Resumen por Día →</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0; color: var(--primary-color);">Promedio e intervalo teórico por sesión</h3>
         <canvas id="chartSesiones" height="100"></canvas>
     </div>
+    
     <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0;">Historial de Sesiones</h3>
-            <a href="{{ url_for('add_session') }}" class="btn">Registrar Actividad</a>
-        </div>
+        <h3 style="margin-top: 0;">Sesiones Registradas</h3>
+        <div style="overflow-x:auto;">
         <table>
-            <thead><tr><th>Fecha</th><th>Actividad</th><th>Minutos</th><th>Promedio (lpm)</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Fecha</th><th>Actividad</th><th>Min.</th><th>Lpm</th><th>Comparación</th><th></th></tr></thead>
             <tbody>
                 {% for s in sesiones %}
                 <tr>
                     <td>{{ s.fecha }}</td><td>{{ s.actividad }}</td><td>{{ s.minutos }}</td><td>{{ s.promedio }}</td>
-                    <td>{% if s.clasificacion == 'Dentro' %}<span class="tag-dentro">Dentro de Zona</span>{% else %}<span class="tag-fuera">{{ s.clasificacion }}</span>{% endif %}</td>
+                    <td>{% if s.clasificacion == 'Dentro' %}<span class="tag-dentro">Dentro</span>{% else %}<span class="tag-fuera">{{ s.clasificacion }}</span>{% endif %}</td>
+                    <td><a href="{{ url_for('session_detail', id=s.id) }}" style="color:var(--primary-color);">Ver →</a></td>
                 </tr>
                 {% else %}
-                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No hay sesiones registradas.</td></tr>
+                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No hay sesiones para estos filtros.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 <script>
     const ctx = document.getElementById('chartSesiones').getContext('2d');
-    const sesionesRaw = {{ sesiones | tojson }};
-    const sesiones = sesionesRaw.reverse();
-    const labels = sesiones.map(s => s.fecha);
-    const promedios = sesiones.map(s => s.promedio);
-    const limInf = sesiones.map(s => s.lim_inf);
-    const limSup = sesiones.map(s => s.lim_sup);
+    const sesiones = {{ sesiones | tojson }}.reverse();
     new Chart(ctx, {
         type: 'line',
-        data: { labels: labels, datasets: [
-            { label: 'Promedio Registrado', data: promedios, borderColor: '#FFD700', backgroundColor: '#FFD700', borderWidth: 2, pointRadius: 5 },
-            { label: 'Límite Superior', data: limSup, borderColor: '#f44336', borderDash: [5, 5], fill: false, pointRadius: 0 },
-            { label: 'Límite Inferior', data: limInf, borderColor: '#4CAF50', borderDash: [5, 5], fill: false, pointRadius: 0 }
+        data: { labels: sesiones.map(s => s.fecha), datasets: [
+            { label: 'Promedio', data: sesiones.map(s => s.promedio), borderColor: '#FFD700', backgroundColor: '#FFD700', borderWidth: 2, pointRadius: 5 },
+            { label: 'Límite Superior', data: sesiones.map(s => s.lim_sup), borderColor: '#f44336', borderDash: [5, 5], fill: false, pointRadius: 0 },
+            { label: 'Límite Inferior', data: sesiones.map(s => s.lim_inf), borderColor: '#4CAF50', borderDash: [5, 5], fill: false, pointRadius: 0 }
         ]},
-        options: { responsive: true, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' } }, x: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' } } }, plugins: { legend: { labels: { color: '#fff' } } } }
+        options: { responsive: true, scales: { y: { grid: { color: '#333' } }, x: { grid: { color: '#333' } } } }
     });
 </script>
 {% endblock %}

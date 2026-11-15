@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<nav class="navbar">
+    <h2>Zona 2</h2>
+    <div><a href="{{ url_for('dashboard') }}">← Volver al Historial</a></div>
+</nav>
+<div class="container">
+    <h2 style="color: var(--primary-color);">Resumen por Día</h2>
+    <p style="color: var(--text-muted);">Totalización de los registros filtrados. No se calcula una media cardíaca diaria artificial.</p>
+    <div style="display:flex; flex-direction:column; gap:15px;">
+        {% for r in resumen %}
+        <div class="card" style="margin-bottom:0; display:flex; justify-content:space-between;">
+            <div>
+                <h3 style="margin:0;">{{ r.fecha }}</h3>
+                <p style="margin:5px 0 0 0; color:var(--text-muted);">Sesiones: <strong>{{ r.cantidad }}</strong></p>
+            </div>
+            <div style="text-align:right;">
+                <h3 style="margin:0;">{{ r.minutos }} min</h3>
+                <p style="margin:5px 0 0 0; color:var(--text-muted);">Duración total</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="card"><p style="text-align:center; color:var(--text-muted);">No hay agrupaciones para estos filtros.</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

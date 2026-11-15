@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zona 2 Tracker</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- RNF05: Script local. Si no existe, intenta usar CDN como fallback durante desarrollo -->
+    <script src="{{ url_for('static', filename='chart.js') }}" onerror="this.src='https://cdn.jsdelivr.net/npm/chart.js';"></script>
     <style>
-        :root { --bg-color: #121212; --surface-color: #1e1e1e; --primary-color: #FFD700; --text-main: #ffffff; --text-muted: #a0a0a0; --border-color: #333333; }
+        :root { --bg-color: #121212; --surface-color: #1e1e1e; --primary-color: #FFD700; --text-main: #ffffff; --text-muted: #a0a0a0; --border-color: #333333; --danger: #f44336; --success: #4CAF50;}
         body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
         .navbar { background-color: var(--surface-color); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-color); }
         .navbar h2 { margin: 0; color: var(--primary-color); }
@@ -14,14 +15,19 @@
         .navbar a:hover { color: var(--primary-color); }
         .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
         .card { background-color: var(--surface-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
-        .btn { background-color: var(--primary-color); color: #000; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn { background-color: var(--primary-color); color: #000; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; text-align: center;}
         .btn:hover { background-color: #e6c200; }
+        .btn-danger { background-color: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .btn-danger:hover { background-color: rgba(244, 67, 54, 0.1); }
         input, select { width: 100%; padding: 10px; margin: 8px 0 16px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-color); }
         th { color: var(--primary-color); }
-        .tag-dentro { color: #4CAF50; font-weight: bold;}
-        .tag-fuera { color: #f44336; font-weight: bold;}
+        .tag-dentro { color: var(--success); font-weight: bold;}
+        .tag-fuera { color: var(--danger); font-weight: bold;}
+        .filters { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap;}
+        .filters > div { flex: 1; min-width: 150px; }
+        .filters input, .filters select { margin-bottom: 0; }
         @media (max-width: 360px) { .navbar { padding: 0.5rem; flex-direction: row; flex-wrap: wrap; } .navbar a { margin-left: 5px; font-size: 0.9em; } }
     </style>
 </head>
