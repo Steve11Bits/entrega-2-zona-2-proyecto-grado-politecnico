@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS USUARIO (
+    usuario_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_usuario TEXT UNIQUE NOT NULL,
+    clave_hash TEXT NOT NULL,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS SESION_ENTRENAMIENTO (
+    sesion_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    fecha_sesion TEXT NOT NULL,
+    tipo_actividad TEXT NOT NULL,
+    edad_sesion INTEGER NOT NULL,
+    duracion_centiminutos INTEGER NOT NULL,
+    fc_promedio_centesimas INTEGER NOT NULL,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(usuario_id) REFERENCES USUARIO(usuario_id)
+);

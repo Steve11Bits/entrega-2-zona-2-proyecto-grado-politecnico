@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width: 400px; margin-top: 10vh;">
+    <h1 style="color: var(--primary-color); text-align: center;">Zona 2 Tracker</h1>
+    <div class="card">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %} <div style="color: #f44336; margin-bottom: 15px;">{{ messages[0] }}</div> {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('register') if register else url_for('login') }}" method="POST">
+            <label>Nombre de usuario</label>
+            <input type="text" name="username" required autocomplete="off">
+            <label>Contraseña</label>
+            <input type="password" name="password" required>
+            <button type="submit" class="btn" style="width: 100%;">{{ 'Crear cuenta' if register else 'Ingresar' }}</button>
+        </form>
+        <div style="margin-top: 15px; text-align: center;">
+            {% if register %} <a href="{{ url_for('index') }}" style="color: var(--primary-color);">Volver al inicio de sesión</a>
+            {% else %} <a href="{{ url_for('register') }}" style="color: var(--primary-color);">¿No tienes cuenta? Regístrate</a> {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
